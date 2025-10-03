@@ -73,12 +73,15 @@ class WiFiConfigActivity : AppCompatActivity() {
     private val nextBtnClickListener = View.OnClickListener {
         val ssid = binding.layoutWifiConfig.etSsidInput.text.toString()
         val password = binding.layoutWifiConfig.etPasswordInput.text.toString()
+        val mqttBroker = binding.layoutWifiConfig.etMqttBroker.text.toString().trim()
+        val mqttUsername = binding.layoutWifiConfig.etMqttUsername.text.toString().trim()
+        val mqttPassword = binding.layoutWifiConfig.etMqttPassword.text.toString().trim()
 
         if (TextUtils.isEmpty(ssid)) {
             binding.layoutWifiConfig.etSsidInput.error = getString(R.string.error_ssid_empty)
             return@OnClickListener
         }
-        goToProvisionActivity(ssid, password)
+        goToProvisionActivity(ssid, password, mqttBroker, mqttUsername, mqttPassword)
     }
 
     private fun initViews() {
@@ -107,12 +110,15 @@ class WiFiConfigActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToProvisionActivity(ssid: String, password: String) {
+    private fun goToProvisionActivity(ssid: String, password: String, mqttBroker: String, mqttUsername: String, mqttPassword: String) {
         finish()
         val provisionIntent = Intent(applicationContext, ProvisionActivity::class.java)
         provisionIntent.putExtras(intent)
         provisionIntent.putExtra(AppConstants.KEY_WIFI_SSID, ssid)
         provisionIntent.putExtra(AppConstants.KEY_WIFI_PASSWORD, password)
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_BROKER, mqttBroker)
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_USERNAME, mqttUsername)
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_PASSWORD, mqttPassword)
         startActivity(provisionIntent)
     }
 

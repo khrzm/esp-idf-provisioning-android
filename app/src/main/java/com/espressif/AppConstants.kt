@@ -31,6 +31,9 @@ object AppConstants {
     const val KEY_USER_NAME_THREAD: String = "sec2_username_thread"
     const val KEY_THREAD_DATASET: String = "thread_dataset"
     const val KEY_THREAD_SCAN_AVAILABLE: String = "thread_scan_available"
+    const val KEY_MQTT_BROKER: String = "mqtt_broker"
+    const val KEY_MQTT_USERNAME: String = "mqtt_username"
+    const val KEY_MQTT_PASSWORD: String = "mqtt_password"
 
     const val ESP_PREFERENCES: String = "Esp_Preferences"
 
