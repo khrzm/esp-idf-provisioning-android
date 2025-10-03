@@ -35,10 +35,19 @@ object AppConstants {
     const val KEY_MQTT_USERNAME: String = "mqtt_username"
     const val KEY_MQTT_PASSWORD: String = "mqtt_password"
 
-    // Hardcoded MQTT credentials
-    const val DEFAULT_MQTT_BROKER: String = "mqtt://your.broker.com:1883"
-    const val DEFAULT_MQTT_USERNAME: String = "your_username"
-    const val DEFAULT_MQTT_PASSWORD: String = "your_password"
+    // > [!important]: Update these MQTT credentials before building the app!
+    // These values are sent to the ESP32 device during provisioning.
+    // The app will validate these values and show an error if they are empty or contain placeholders.
+    //
+    // Example values:
+    //   DEFAULT_MQTT_BROKER = "mqtt://broker.hivemq.com:1883"
+    //   DEFAULT_MQTT_USERNAME = "device_user"
+    //   DEFAULT_MQTT_PASSWORD = "secure_password_123"
+    //
+    // Using @JvmField val instead of const val to avoid compile-time inlining issues
+    @JvmField val DEFAULT_MQTT_BROKER: String = "mqtt://your.broker.com:1883"
+    @JvmField val DEFAULT_MQTT_USERNAME: String = "your_username"
+    @JvmField val DEFAULT_MQTT_PASSWORD: String = "your_password"
 
     const val ESP_PREFERENCES: String = "Esp_Preferences"
 

@@ -243,6 +243,10 @@ class WiFiScanActivity : AppCompatActivity() {
         provisionIntent.putExtras(intent)
         provisionIntent.putExtra(AppConstants.KEY_WIFI_SSID, ssid)
         provisionIntent.putExtra(AppConstants.KEY_WIFI_PASSWORD, password)
+        // Add MQTT credentials from AppConstants
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_BROKER, AppConstants.DEFAULT_MQTT_BROKER)
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_USERNAME, AppConstants.DEFAULT_MQTT_USERNAME)
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_PASSWORD, AppConstants.DEFAULT_MQTT_PASSWORD)
         startActivity(provisionIntent)
     }
 

@@ -276,6 +276,10 @@ public class ThreadConfigActivity extends AppCompatActivity {
         Intent provisionIntent = new Intent(getApplicationContext(), ProvisionActivity.class);
         provisionIntent.putExtras(getIntent());
         provisionIntent.putExtra(AppConstants.KEY_THREAD_DATASET, activeDataset);
+        // Add MQTT credentials from AppConstants
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_BROKER, AppConstants.DEFAULT_MQTT_BROKER);
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_USERNAME, AppConstants.DEFAULT_MQTT_USERNAME);
+        provisionIntent.putExtra(AppConstants.KEY_MQTT_PASSWORD, AppConstants.DEFAULT_MQTT_PASSWORD);
         startActivity(provisionIntent);
     }
 

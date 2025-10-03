@@ -72,7 +72,14 @@ class ProvisionActivity : AppCompatActivity() {
         mqttUsername = intent.getStringExtra(AppConstants.KEY_MQTT_USERNAME)
         mqttPassword = intent.getStringExtra(AppConstants.KEY_MQTT_PASSWORD)
 
-        Log.d(TAG, "MQTT Broker: $mqttBroker")
+        Log.d(TAG, "=== MQTT Credentials Received from Intent ===")
+        Log.d(TAG, "MQTT Broker: '$mqttBroker'")
+        Log.d(TAG, "MQTT Username: '$mqttUsername'")
+        Log.d(TAG, "MQTT Password: ${if (!mqttPassword.isNullOrEmpty()) "***" else "NULL/EMPTY"}")
+        Log.d(TAG, "MQTT Broker length: ${mqttBroker?.length ?: 0}")
+        Log.d(TAG, "MQTT Username length: ${mqttUsername?.length ?: 0}")
+        Log.d(TAG, "MQTT Password length: ${mqttPassword?.length ?: 0}")
+
         provisionManager = ESPProvisionManager.getInstance(applicationContext)
         initViews()
         EventBus.getDefault().register(this)
@@ -392,14 +399,25 @@ class ProvisionActivity : AppCompatActivity() {
         mqttTimeoutHandler?.postDelayed(mqttTimeoutRunnable!!, 30000)
 
         try {
+            // Build JSON with explicit value logging
+            val brokerValue = mqttBroker ?: ""
+            val usernameValue = mqttUsername ?: ""
+            val passwordValue = mqttPassword ?: ""
+
+            Log.d(TAG, "=== Building MQTT JSON Payload ===")
+            Log.d(TAG, "  mqtt_uri: '$brokerValue' (length: ${brokerValue.length})")
+            Log.d(TAG, "  mqtt_username: '$usernameValue' (length: ${usernameValue.length})")
+            Log.d(TAG, "  mqtt_password: ${if (passwordValue.isNotEmpty()) "***" else "EMPTY"} (length: ${passwordValue.length})")
+
             val jsonPayload = org.json.JSONObject().apply {
-                put("mqtt_uri", mqttBroker ?: "")
-                put("mqtt_username", mqttUsername ?: "")
-                put("mqtt_password", mqttPassword ?: "")
+                put("mqtt_uri", brokerValue)
+                put("mqtt_username", usernameValue)
+                put("mqtt_password", passwordValue)
             }.toString()
 
             val bytes = jsonPayload.toByteArray(Charsets.UTF_8)
-            Log.d(TAG, "Sending MQTT config: $jsonPayload")
+            Log.d(TAG, "JSON payload: $jsonPayload")
+            Log.d(TAG, "Payload size: ${bytes.size} bytes")
 
             provisionManager.espDevice.sendDataToCustomEndPoint(
                 "config",

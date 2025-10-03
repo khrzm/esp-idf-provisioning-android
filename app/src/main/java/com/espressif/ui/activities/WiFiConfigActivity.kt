@@ -73,14 +73,49 @@ class WiFiConfigActivity : AppCompatActivity() {
     private val nextBtnClickListener = View.OnClickListener {
         val ssid = binding.layoutWifiConfig.etSsidInput.text.toString()
         val password = binding.layoutWifiConfig.etPasswordInput.text.toString()
+
+        // Load MQTT credentials from AppConstants
         val mqttBroker = AppConstants.DEFAULT_MQTT_BROKER
         val mqttUsername = AppConstants.DEFAULT_MQTT_USERNAME
         val mqttPassword = AppConstants.DEFAULT_MQTT_PASSWORD
+
+        // ALWAYS log what we got from AppConstants
+        Log.e(TAG, "========================================")
+        Log.e(TAG, "MQTT VALUES FROM APPCONSTANTS:")
+        Log.e(TAG, "  Broker: '$mqttBroker'")
+        Log.e(TAG, "  Username: '$mqttUsername'")
+        Log.e(TAG, "  Password: '$mqttPassword'")
+        Log.e(TAG, "  Broker length: ${mqttBroker.length}")
+        Log.e(TAG, "  Username length: ${mqttUsername.length}")
+        Log.e(TAG, "  Password length: ${mqttPassword.length}")
+        Log.e(TAG, "========================================")
 
         if (TextUtils.isEmpty(ssid)) {
             binding.layoutWifiConfig.etSsidInput.error = getString(R.string.error_ssid_empty)
             return@OnClickListener
         }
+
+        // Validate MQTT credentials are not empty or placeholders
+        if (mqttBroker.isEmpty() || mqttBroker.contains("your.broker") ||
+            mqttUsername.isEmpty() || mqttUsername.contains("your_username") ||
+            mqttPassword.isEmpty() || mqttPassword.contains("your_password")) {
+
+            Log.e(TAG, "❌ VALIDATION FAILED: MQTT credentials contain placeholders!")
+
+            showAlertDialog(
+                getString(R.string.error_title),
+                "MQTT credentials are not configured in AppConstants. Please update:\n\n" +
+                "DEFAULT_MQTT_BROKER\nDEFAULT_MQTT_USERNAME\nDEFAULT_MQTT_PASSWORD\n\n" +
+                "Current broker: $mqttBroker"
+            )
+            return@OnClickListener
+        }
+
+        Log.d(TAG, "✅ MQTT credentials validation PASSED")
+        Log.d(TAG, "  Broker: $mqttBroker")
+        Log.d(TAG, "  Username: $mqttUsername")
+        Log.d(TAG, "  Password: ***")
+
         goToProvisionActivity(ssid, password, mqttBroker, mqttUsername, mqttPassword)
     }
 
@@ -113,13 +148,26 @@ class WiFiConfigActivity : AppCompatActivity() {
     private fun goToProvisionActivity(ssid: String, password: String, mqttBroker: String, mqttUsername: String, mqttPassword: String) {
         finish()
         val provisionIntent = Intent(applicationContext, ProvisionActivity::class.java)
+        // Copy extras from incoming intent first
         provisionIntent.putExtras(intent)
+        // Then add our values (these will overwrite any conflicting keys from incoming intent)
         provisionIntent.putExtra(AppConstants.KEY_WIFI_SSID, ssid)
         provisionIntent.putExtra(AppConstants.KEY_WIFI_PASSWORD, password)
         provisionIntent.putExtra(AppConstants.KEY_MQTT_BROKER, mqttBroker)
         provisionIntent.putExtra(AppConstants.KEY_MQTT_USERNAME, mqttUsername)
         provisionIntent.putExtra(AppConstants.KEY_MQTT_PASSWORD, mqttPassword)
         startActivity(provisionIntent)
+    }
+
+    private fun showAlertDialog(title: String, message: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        builder.setPositiveButton(R.string.btn_ok) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
     }
 
     private fun showAlertForDeviceDisconnected() {
