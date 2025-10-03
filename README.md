@@ -1,3 +1,14 @@
+# Forked Provisioning
+
+## Features
+- [x] Sending MQTT credentials. Broker, username, and password. Hardcode on AppConstants.kt
+- [x] Receiving hardware info. Device ID and pairing key.
+
+<img width="268" height="595" alt="Screenshot 2025-10-04 at 03 14 21" src="https://github.com/user-attachments/assets/6afb5bad-5b7b-459a-8899-5cccf0fe3079" />
+
+
+---
+
 # Provisioning Library  
 
 Provisioning library provides a mechanism to send network credentials and/or custom data to ESP32 (or its variants like S2, S3, C3, etc.) or ESP8266 devices.
