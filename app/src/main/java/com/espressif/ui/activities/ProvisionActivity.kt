@@ -57,7 +57,7 @@ class ProvisionActivity : AppCompatActivity() {
     private var mqttTimeoutRunnable: Runnable? = null
     private var mqttRetryCount = 0
     private val MQTT_MAX_RETRIES = 3
-    private val MQTT_RETRY_DELAY_MS = 1000L
+    private val MQTT_RETRY_DELAY_MS = 3000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
