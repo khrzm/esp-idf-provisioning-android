@@ -1,11 +1,12 @@
 # Forked Provisioning
 
 ## Features
-- [x] Sending MQTT credentials. Broker, username, and password. Hardcode on AppConstants.kt
+- [x] Sending MQTT credentials. Broker, username, and password are hardcode writen on `AppConstants.kt`.
 - [x] Receiving hardware info. Device ID and pairing key.
+- [x] Documentation of BLE Flow: `./ble_provisioning_flow.md`.
 
 <img width="268" height="595" alt="Screenshot 2025-10-04 at 03 14 21" src="https://github.com/user-attachments/assets/6afb5bad-5b7b-459a-8899-5cccf0fe3079" />
-
+- Confirmation page.
 
 ---
 
