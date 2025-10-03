@@ -35,6 +35,11 @@ object AppConstants {
     const val KEY_MQTT_USERNAME: String = "mqtt_username"
     const val KEY_MQTT_PASSWORD: String = "mqtt_password"
 
+    // Hardcoded MQTT credentials
+    const val DEFAULT_MQTT_BROKER: String = "mqtt://your.broker.com:1883"
+    const val DEFAULT_MQTT_USERNAME: String = "your_username"
+    const val DEFAULT_MQTT_PASSWORD: String = "your_password"
+
     const val ESP_PREFERENCES: String = "Esp_Preferences"
 
     const val DEVICE_TYPE_SOFTAP: String = "softap"

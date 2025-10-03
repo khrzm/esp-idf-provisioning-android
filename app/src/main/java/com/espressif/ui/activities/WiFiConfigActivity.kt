@@ -73,9 +73,9 @@ class WiFiConfigActivity : AppCompatActivity() {
     private val nextBtnClickListener = View.OnClickListener {
         val ssid = binding.layoutWifiConfig.etSsidInput.text.toString()
         val password = binding.layoutWifiConfig.etPasswordInput.text.toString()
-        val mqttBroker = binding.layoutWifiConfig.etMqttBroker.text.toString().trim()
-        val mqttUsername = binding.layoutWifiConfig.etMqttUsername.text.toString().trim()
-        val mqttPassword = binding.layoutWifiConfig.etMqttPassword.text.toString().trim()
+        val mqttBroker = AppConstants.DEFAULT_MQTT_BROKER
+        val mqttUsername = AppConstants.DEFAULT_MQTT_USERNAME
+        val mqttPassword = AppConstants.DEFAULT_MQTT_PASSWORD
 
         if (TextUtils.isEmpty(ssid)) {
             binding.layoutWifiConfig.etSsidInput.error = getString(R.string.error_ssid_empty)
