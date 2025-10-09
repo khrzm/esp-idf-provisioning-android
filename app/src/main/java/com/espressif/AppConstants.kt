@@ -45,9 +45,9 @@ object AppConstants {
     //   DEFAULT_MQTT_PASSWORD = "secure_password_123"
     //
     // Using @JvmField val instead of const val to avoid compile-time inlining issues
-    @JvmField val DEFAULT_MQTT_BROKER: String = "mqtt://your.broker.com:1883"
-    @JvmField val DEFAULT_MQTT_USERNAME: String = "your_username"
-    @JvmField val DEFAULT_MQTT_PASSWORD: String = "your_password"
+    @JvmField val DEFAULT_MQTT_BROKER: String = "mqtts://xxx.xxx.xxx.xxx:1883"
+    @JvmField val DEFAULT_MQTT_USERNAME: String = "abc"
+    @JvmField val DEFAULT_MQTT_PASSWORD: String = "123"
 
     const val ESP_PREFERENCES: String = "Esp_Preferences"
 

@@ -621,13 +621,125 @@ class ProvisionActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun sendWifiConfig() {
+        Log.d(TAG, "Sending WiFi configuration to /wifi endpoint")
+
+        // Show step 3 progress
+        binding.ivTick3.visibility = View.GONE
+        binding.provProgress3.visibility = View.VISIBLE
+
+        try {
+            // Build JSON: {"ssid":"...", "password":"..."}
+            val jsonPayload = org.json.JSONObject().apply {
+                put("ssid", ssidValue ?: "")
+                put("password", passphraseValue ?: "")
+            }.toString()
+
+            val bytes = jsonPayload.toByteArray(Charsets.UTF_8)
+            Log.d(TAG, "WiFi JSON payload: {\"ssid\":\"$ssidValue\", \"password\":\"***\"}")
+            Log.d(TAG, "Payload size: ${bytes.size} bytes")
+
+            provisionManager.espDevice.sendDataToCustomEndPoint(
+                "wifi",
+                bytes,
+                object : ResponseListener {
+                    override fun onSuccess(returnData: ByteArray?) {
+                        runOnUiThread {
+                            Log.d(TAG, "WiFi config sent successfully")
+
+                            try {
+                                if (returnData != null && returnData.isNotEmpty()) {
+                                    val response = String(returnData, Charsets.UTF_8)
+                                    Log.d(TAG, "WiFi config response: $response")
+
+                                    val jsonResponse = org.json.JSONObject(response)
+                                    val status = jsonResponse.optString("status", "")
+
+                                    if (status == "success") {
+                                        // WiFi connected successfully
+                                        binding.ivTick3.setImageResource(R.drawable.ic_checkbox_on)
+                                        binding.ivTick3.visibility = View.VISIBLE
+                                        binding.provProgress3.visibility = View.GONE
+
+                                        // Show step 4 (WiFi connection verified)
+                                        binding.ivTick4.setImageResource(R.drawable.ic_checkbox_on)
+                                        binding.ivTick4.visibility = View.VISIBLE
+
+                                        // Show step 5 (provisioning complete)
+                                        binding.ivTick5.setImageResource(R.drawable.ic_checkbox_on)
+                                        binding.ivTick5.visibility = View.VISIBLE
+
+                                        isProvisioningCompleted = true
+                                        hideLoading()
+
+                                        // Disconnect after 3 seconds to allow ESP32 to start cleanup
+                                        // ESP32 will then trigger MQTT initialization after BLE cleanup
+                                        Handler(Looper.getMainLooper()).postDelayed({
+                                            provisionManager.espDevice.disconnectDevice()
+                                            Log.d(TAG, "BLE disconnected - ESP32 will start MQTT")
+                                        }, 3000)
+                                    } else {
+                                        // WiFi connection failed
+                                        val message = jsonResponse.optString("message", "Unknown error")
+                                        showWifiError("WiFi connection failed: $message")
+                                    }
+                                } else {
+                                    showWifiError("Empty response from device")
+                                }
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Failed to parse WiFi config response", e)
+                                showWifiError("Failed to parse response: ${e.message}")
+                            }
+                        }
+                    }
+
+                    override fun onFailure(e: Exception) {
+                        runOnUiThread {
+                            Log.e(TAG, "Failed to send WiFi config", e)
+                            showWifiError("Failed to communicate with device: ${e.message}")
+                        }
+                    }
+                }
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Error building WiFi config", e)
+            showWifiError("Error: ${e.message}")
+        }
+    }
+
+    private fun showWifiError(errorMessage: String) {
+        binding.ivTick3.setImageResource(R.drawable.ic_error)
+        binding.ivTick3.visibility = View.VISIBLE
+        binding.provProgress3.visibility = View.GONE
+        binding.tvProvError3.visibility = View.VISIBLE
+        binding.tvProvError3.text = errorMessage
+        binding.tvProvError.visibility = View.VISIBLE
+        hideLoading()
+
+        AlertDialog.Builder(this)
+            .setTitle("WiFi Configuration Failed")
+            .setMessage("Failed to configure WiFi on device.\n\n$errorMessage")
+            .setPositiveButton("Retry") { _, _ ->
+                binding.tvProvError.visibility = View.GONE
+                binding.tvProvError3.visibility = View.GONE
+                showLoading()
+                sendWifiConfig()
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                provisionManager.espDevice.disconnectDevice()
+                finish()
+            }
+            .setCancelable(false)
+            .show()
+    }
+
     private fun showDeviceInfoDialog() {
         AlertDialog.Builder(this)
             .setTitle("Device Information Received")
             .setMessage("Device ID: $deviceId\nPairing Key: $pairingKey\n\nPress OK to continue with WiFi provisioning.")
             .setPositiveButton("OK") { _, _ ->
-                // Now start WiFi provisioning
-                doProvisioning()
+                // Now start WiFi provisioning via JSON
+                sendWifiConfig()
             }
             .setCancelable(false)
             .show()
